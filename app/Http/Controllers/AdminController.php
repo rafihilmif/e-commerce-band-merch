@@ -50,18 +50,21 @@ class AdminController extends Controller
             'phone' => $req->phone
         ]);
         if($res){
-            return redirect()->back()->with('pesan','Berhasil Menambah Customer');
+            return redirect()->back()->with('success','Berhasil Menambah Customer');
+        }else{
+            return redirect()->back()->with('error', 'Gagal Menambah Customer');
         }
     }
 
     public function ubahuser(Request $req){
-        $customer = Customer::all()->where('id',$req->id);
-        $param["daftarcustomer"] = $customer;
+        $cust = Customer::all()->find($req->id);
         //$param["cust"] = $cust;
-        return view('admin.update', $param);
+        return view('admin.update', ['customer' => $cust], compact('cust'));
     }
 
     public function doubah(Request $req){
+        $customer = Customer::find($req->id);
+
         $req->validate(
             [
                 'email' => 'required',
@@ -74,8 +77,8 @@ class AdminController extends Controller
                 'phone' => 'required'
             ]
         );
-        $ubahcust = Customer::where('id',$req->id);
-        $res = $ubahcust->update([
+
+        $res = $customer->update([
             'email' => $req->email,
             'name' => $req->name,
             'password' => $req->password,
@@ -96,7 +99,9 @@ class AdminController extends Controller
         // $ubahcust->id = Uuid::uuid4()->getHex();
         // $res = $ubahcust->save();
         if($res){
-            return redirect()->back()->with('pesanSukses', 'Berhasil Mengubah Customer');
+            return redirect()->back()->with('success', 'Berhasil Mengubah Customer');
+        }else{
+            return redirect()->back()->with('error', 'Gagal Mengubah Customer');
         }
     }
 
@@ -104,7 +109,7 @@ class AdminController extends Controller
         $customer = Customer::find($req->id);
         $res = $customer->delete();
         if($res){
-            return redirect()->back()->with('pesanGagal', 'Data Berhasil dihapus');
+            return redirect()->back()->with('info', 'Data Berhasil dihapus');
         }
     }
     // public function logs(Request $req){
